@@ -17,22 +17,23 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing production and development dependencies...'
-                sh 'npm install'
+                echo 'Resolving dependencies inside isolated Node container...'
+                sh 'docker run --rm -v $(pwd):/app -w /app node:20-alpine npm install'
             }
         }
 
         stage('Automated Unit Testing') {
             steps {
-                echo 'Executing Jest and Supertest test suites...'
-                sh 'npm test'
+                echo 'Executing Jest and Supertest test suites inside isolated Node container...'
+                sh 'docker run --rm -v $(pwd):/app -w /app node:20-alpine npm test'
             }
         }
 
         stage('Static Vulnerability Scanning') {
             steps {
                 echo 'Executing dynamic dependency vulnerability audit...'
-                sh 'npm audit --audit-level=high'
+                // Quality gate: Fails pipeline on high or critical vulnerabilities
+                sh 'docker run --rm -v $(pwd):/app -w /app node:20-alpine npm audit --audit-level=high'
             }
         }
 
