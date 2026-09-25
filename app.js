@@ -1,8 +1,16 @@
-const express = require('express');
-const app = express();
-const port = 8080;
+var express = require('express');
+var app = express();
 
-app.get('/', (req, res) => res.send('Hello World!'));
+app.get('/', function (req, res) {
+    res.send('Hello World!');
+});
 
-app.listen(port);
-console.log(`App running on http://localhost:${port}`);
+// Export app instance for automated testing
+module.exports = app;
+
+if (require.main === module) {
+    var port = process.env.PORT || 3000;
+    app.listen(port, function () {
+        console.log('Server running at http://127.0.0.1:' + port + '/');
+    });
+}
